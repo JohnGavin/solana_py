@@ -1,0 +1,40 @@
+---
+title: "rpkgdev"
+format: revealjs
+---
+
+## Quarto
++ <https://rpkgdev-sicss-covenant.netlify.app/intro/demo/>
+  + <https://r-pkgs.org/setup.html>
+
+```{r install.packages}
+#| eval = FALSE
+install.packages(c("devtools", "roxygen2", "testthat", "knitr"))
+# installs the development versions of devtools and usethis
+# devtools::install_github("r-lib/devtools")
+# devtools::install_github("r-lib/usethis")
+
+```
+
++ simulate installing and loading a package, during _interactive_ development
+```{r}
+if (interactive()) {
+  # take care to only attach devtools in interactive sessions
+  suppressMessages(pacman::p_load(devtools))
+  devtools::dev_sitrep()
+  install.packages("available")
+  devtools::load_all()
+  devtools::has_devel()
+}
+# usethis::edit_r_profile()
+```
+
+## Create package
+
+```{r}
+pkg_name <- "solanapy"
+available::available(pkg_name)
+usethis::create_package( file.path(".", pkg_name))
+usethis::use_git()
+```
+

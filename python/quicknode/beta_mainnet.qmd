@@ -1,0 +1,89 @@
+---
+title: "quicknode solana mainnet"
+format: revealjs
+---
+
+# Setup
+
+## Imports setup
+- server
+  - https://www.quicknode.com/endpoints/62937
+- in/out sol account
+  - https://solscan.io/address/8kaAbZYLHUDadjgpRXkZE63E2AvsZDtJRddAMXtLB4ev
+
+```{python imports}
+from pprint import pprint as pp
+from solana.rpc.api import Client
+from solana.publickey import PublicKey
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', None)
+
+```
+
+
+## Client setup
+- solana (beta) mainnet
+  - via https://www.quicknode.com/endpoints/62937
+
+```{python Client}
+mainnet = 'https://light-quaint-road.solana-mainnet.discover.quiknode.pro/8dc4834a2a82f2c106d25f3619d0299371c5cc1e/'
+solana_client = Client(
+  # solana (beta) mainnet
+  # via https://www.quicknode.com/endpoints/62937
+  mainnet
+  # "https://indulgent-hardworking-sun.solana-devnet.discover.quiknode.pro/"
+)
+in_out = '8kaAbZYLHUDadjgpRXkZE63E2AvsZDtJRddAMXtLB4ev'
+```
+
+## getBalance
+
+```{python getBalance}
+#| echo = TRUE
+# https://www.quicknode.com/docs/solana/getBalance
+# A lamport has a value of 0.000000001 SOL
+pp(solana_client.get_balance(PublicKey(
+  in_out
+  # 'vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg'
+  )))
+# in/out
+# https://solscan.io/address/8kaAbZYLHUDadjgpRXkZE63E2AvsZDtJRddAMXtLB4ev
+# 0.43203928 solscan
+# 0.43204 phantom
+# v 432039280 py solana
+```
+
+
+```{python}
+from jsonrpcclient import request, parse, Ok
+import json
+import logging
+import requests
+response = requests.post(mainnet,   , 
+json=request("getMultipleAccounts", params = 
+  [[ in_out 
+  ],
+  {"dataSlice": {"offset": 0,"length": 0}}]
+))
+# "vines1vzrYbzLMRdu58ou5XTby4qAqVRLmqo36NKPTg",
+#   , "4fYNw3dojWmQ4dXtSGE9epjRGy9pFSx62YypT7avPYvA"
+
+# https://jsoncrack.com/editor
+# replace ' with " for valid json?!
+# str(words).replace("'", '"')
+
+json.dumps( response.json() )
+
+parsed = parse( response.json() )
+out = parsed.result
+lamport = 0.000000001 # lamport = 0.000000001 SOL
+sol = round(out['value'][0]['lamports'] * lamport, 4)
+if isinstance(parsed, Ok):
+    # A lamport has a value of 0.000000001 SOL
+    pp(out)
+else:
+    logging.error(parsed.message)
+    
+```
+
